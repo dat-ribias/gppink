@@ -7594,10 +7594,40 @@ namespace gInk
 
         public static void ForceCursorRefresh()
         {
-            POINT p;
-            if (GetPhysicalCursorPos(out p))
+            try
             {
-                SetPhysicalCursorPos(p.X, p.Y);
+                POINT p;
+                bool getOk = GetPhysicalCursorPos(out p);
+                System.Drawing.Point winformsPos = System.Windows.Forms.Cursor.Position;
+                
+                bool setOk = false;
+                if (getOk)
+                {
+                    setOk = SetPhysicalCursorPos(p.X, p.Y);
+                }
+                
+                POINT pAfter;
+                GetPhysicalCursorPos(out pAfter);
+                System.Drawing.Point winformsPosAfter = System.Windows.Forms.Cursor.Position;
+
+                string logPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "debug.log");
+                using (System.IO.StreamWriter sw = System.IO.File.AppendText(logPath))
+                {
+                    sw.WriteLine(string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} [ForceCursorRefresh] WinFormsBefore=({1},{2}) GetPhysicalOk={3} PhysicalBefore=({4},{5}) SetPhysicalOk={6} PhysicalAfter=({7},{8}) WinFormsAfter=({9},{10})",
+                        DateTime.Now, winformsPos.X, winformsPos.Y, getOk, p.X, p.Y, setOk, pAfter.X, pAfter.Y, winformsPosAfter.X, winformsPosAfter.Y));
+                }
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    string logPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "debug.log");
+                    using (System.IO.StreamWriter sw = System.IO.File.AppendText(logPath))
+                    {
+                        sw.WriteLine(string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} [Error] {1}", DateTime.Now, ex.ToString()));
+                    }
+                }
+                catch {}
             }
         }
 
