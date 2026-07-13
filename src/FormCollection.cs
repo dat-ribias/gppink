@@ -7587,34 +7587,53 @@ namespace gInk
             public int Y;
         }
 
+        private const uint WM_SETCURSOR = 0x0020;
+
         [DllImport("user32.dll")]
         public static extern bool GetPhysicalCursorPos(out POINT lpPoint);
         [DllImport("user32.dll")]
-        public static extern bool SetPhysicalCursorPos(int X, int Y);
+        public static extern IntPtr WindowFromPoint(POINT Point);
+        [DllImport("user32.dll")]
+        public static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetCursor(IntPtr hCursor);
 
         public static void ForceCursorRefresh()
         {
             try
             {
+                FormCollection fc = null;
+                if (Program.frm != null && Program.frm.Root != null)
+                {
+                    fc = Program.frm.Root.FormCollection;
+                }
+
+                IntPtr hCursor = IntPtr.Zero;
+                if (fc != null && fc.IC != null && fc.IC.Cursor != null)
+                {
+                    hCursor = fc.IC.Cursor.Handle;
+                    SetCursor(hCursor);
+                }
+
                 POINT p;
                 bool getOk = GetPhysicalCursorPos(out p);
-                System.Drawing.Point winformsPos = System.Windows.Forms.Cursor.Position;
-                
-                bool setOk = false;
+                IntPtr hWnd = IntPtr.Zero;
+                bool postOk = false;
                 if (getOk)
                 {
-                    setOk = SetPhysicalCursorPos(p.X, p.Y);
+                    hWnd = WindowFromPoint(p);
+                    if (hWnd != IntPtr.Zero)
+                    {
+                        IntPtr lParam = (IntPtr)((0x0200 << 16) | 1);
+                        postOk = PostMessage(hWnd, WM_SETCURSOR, hWnd, lParam);
+                    }
                 }
-                
-                POINT pAfter;
-                GetPhysicalCursorPos(out pAfter);
-                System.Drawing.Point winformsPosAfter = System.Windows.Forms.Cursor.Position;
 
                 string logPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "debug.log");
                 using (System.IO.StreamWriter sw = System.IO.File.AppendText(logPath))
                 {
-                    sw.WriteLine(string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} [ForceCursorRefresh] WinFormsBefore=({1},{2}) GetPhysicalOk={3} PhysicalBefore=({4},{5}) SetPhysicalOk={6} PhysicalAfter=({7},{8}) WinFormsAfter=({9},{10})",
-                        DateTime.Now, winformsPos.X, winformsPos.Y, getOk, p.X, p.Y, setOk, pAfter.X, pAfter.Y, winformsPosAfter.X, winformsPosAfter.Y));
+                    sw.WriteLine(string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} [ForceCursorRefresh_New] CursorHandle={1} Physical=({2},{3}) WindowFromPoint={4} PostMessageOk={5}",
+                        DateTime.Now, hCursor, p.X, p.Y, hWnd, postOk));
                 }
             }
             catch (Exception ex)
