@@ -195,8 +195,49 @@ namespace gInk
             public static extern uint ResumeThread(IntPtr hThread);
         }
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DestroyIcon(IntPtr hIcon);
+
+        [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DeleteObject(IntPtr hObject);
+
+        public static System.Windows.Forms.Cursor CreateCursorFromIcon(Icon icon, string name, int width, int height)
+        {
+            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.Transparent);
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                g.DrawImage(icon.ToBitmap(), 0, 0, width, height);
+            }
+
+            IntPtr hIcon = bmp.GetHicon();
+            IconInfo tmp = new IconInfo();
+            GetIconInfo(hIcon, ref tmp);
+
+            tmp.xHotspot = width / 2;
+            tmp.yHotspot = height / 2;
+
+            tmp.fIcon = false;
+            IntPtr hCursor = CreateIconIndirect(ref tmp);
+
+            DestroyIcon(hIcon);
+            if (tmp.hbmMask != IntPtr.Zero) DeleteObject(tmp.hbmMask);
+            if (tmp.hbmColor != IntPtr.Zero) DeleteObject(tmp.hbmColor);
+
+            bmp.Dispose();
+
+            System.Windows.Forms.Cursor cu = new System.Windows.Forms.Cursor(hCursor);
+            return cu;
+        }
+
         public static System.Windows.Forms.Cursor getCursFromDiskOrRes(string name, System.Windows.Forms.Cursor nocurs)
         {
+            int width = SystemInformation.CursorSize.Width * 3;
+            int height = SystemInformation.CursorSize.Height * 3;
             string filename;
             string[] exts = { ".cur", ".ani", ".ico" };
             try
@@ -207,14 +248,32 @@ namespace gInk
                     if (File.Exists(filename))
                         try
                         {
-                            return new System.Windows.Forms.Cursor(filename);
+                            if (ext == ".ico")
+                            {
+                                using (Icon icon = new Icon(filename, width, height))
+                                {
+                                    return CreateCursorFromIcon(icon, name, width, height);
+                                }
+                            }
+                            else
+                            {
+                                return new System.Windows.Forms.Cursor(filename);
+                            }
                         }
                         catch (Exception e)
                         {
                             Program.WriteErrorLog(string.Format("File {0} found but can not be loaded:\n{1}\n", filename, e));
                         }
                 }
-                return new System.Windows.Forms.Cursor(((System.Drawing.Icon)Properties.Resources.ResourceManager.GetObject(name)).Handle);
+                Icon resIcon = (System.Drawing.Icon)Properties.Resources.ResourceManager.GetObject(name);
+                if (resIcon != null)
+                {
+                    using (Icon sizedIcon = new Icon(resIcon, width, height))
+                    {
+                        return CreateCursorFromIcon(sizedIcon, name, width, height);
+                    }
+                }
+                return nocurs;
             }
             catch
             {

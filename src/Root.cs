@@ -1891,7 +1891,10 @@ namespace gInk
 					if (sName.StartsWith("PEN"))
 					{
 						int penid = 0;
-						if (int.TryParse(sName.Substring(3, 1), out penid) && penid >= 0 && penid < MaxPenCount)
+						string st = sName.Substring(3, Math.Min(2, sName.Length - 3));
+						if (st.EndsWith("_"))
+							st = st.Substring(0, 1);
+						if (int.TryParse(st, out penid) && penid >= 0 && penid < MaxPenCount)
 						{
                             if (sName.EndsWith("_ENABLED"))
                             {
