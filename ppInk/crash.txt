@@ -1,0 +1,28 @@
+07 / 10 / 2026 12:04UnhandledException
+
+version 1.8.3.21675 built on 10/07/2026 12:02
+Oops, ppInk crashed! Please include the following information if you plan to contact the developers:
+
+Could not load file or assembly 'Cyotek.Windows.Forms.ColorPicker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=58daa28b0b2de221' or one of its dependencies. An attempt was made to load a program with an incorrect format.
+
+Stack Trace:
+   at gInk.PenModifyDlg.InitializeComponent()
+   at gInk.PenModifyDlg..ctor(Root root) in D:\p\ppInk\src\PenModifyDlg.cs:line 21
+   at gInk.FormCollection..ctor(Root root) in D:\p\ppInk\src\FormCollection.cs:line 494
+   at gInk.Root..ctor() in D:\p\ppInk\src\Root.cs:line 523
+   at gInk.Program.Main() in D:\p\ppInk\src\Program.cs:line 76
+
+07 / 10 / 2026 12:13UnhandledException
+
+version 1.8.3.21975 built on 10/07/2026 12:12
+Oops, ppInk crashed! Please include the following information if you plan to contact the developers:
+
+Could not load file or assembly 'Cyotek.Windows.Forms.ColorPicker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=58daa28b0b2de221' or one of its dependencies. An attempt was made to load a program with an incorrect format.
+
+Stack Trace:
+   at gInk.PenModifyDlg.InitializeComponent()
+   at gInk.PenModifyDlg..ctor(Root root) in D:\p\ppInk\src\PenModifyDlg.cs:line 21
+   at gInk.FormCollection..ctor(Root root) in D:\p\ppInk\src\FormCollection.cs:line 494
+   at gInk.Root..ctor() in D:\p\ppInk\src\Root.cs:line 523
+   at gInk.Program.Main() in D:\p\ppInk\src\Program.cs:line 76
+
