@@ -1185,6 +1185,19 @@ namespace gInk
                 MemoSpotLight = true;
 
                 gOutCanvus.SmoothingMode = oldSmoothingMode;
+
+                try
+                {
+                    string logPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "debug.log");
+                    using (System.IO.StreamWriter sw = System.IO.File.AppendText(logPath))
+                    {
+                        var cur = Root.FormCollection.IC?.Cursor;
+                        sw.WriteLine(string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} [SpotlightDraw] FormDisplaySize=({1},{2}) MousePos=({3},{4}) ClientPos=({5},{6}) Radius={7} Dpi=({8},{9}) CursorHandle={10} CursorSize=({11},{12}) CursorHotSpot=({13},{14})",
+                            DateTime.Now, this.Width, this.Height, MousePosition.X, MousePosition.Y, pt.X + Root.SpotLightRadius, pt.Y + Root.SpotLightRadius, Root.SpotLightRadius, gOutCanvus.DpiX, gOutCanvus.DpiY,
+                            cur != null ? cur.Handle.ToString() : "null", cur != null ? cur.Size.Width : 0, cur != null ? cur.Size.Height : 0, cur != null ? cur.HotSpot.X : 0, cur != null ? cur.HotSpot.Y : 0));
+                    }
+                }
+                catch {}
             }
             else
                 MemoSpotLight = false;
