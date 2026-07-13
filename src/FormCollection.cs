@@ -1890,7 +1890,7 @@ namespace gInk
             {
                 IC.Cursor = getCursFromDiskOrRes("cursorarrow", System.Windows.Forms.Cursors.NoMove2D);
             }
-            System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
+            ForceCursorRefresh();
 
             return ret;
         }
@@ -4223,7 +4223,7 @@ namespace gInk
                 Root.PickupTransparency = Root.PenAttr[Root.CurrentPen].Transparency;
 
                 this.Cursor = CreateCursorFromBitmap(buildColorPicker(Root.PickupColor, Root.PickupTransparency));
-                System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y); // force cursor refresh
+                ForceCursorRefresh();
 
                 btPenWidth.BackgroundImage = getImgFromDiskOrRes("tool_picker");
                 Root.UponButtonsUpdate |= 0x2;
@@ -4527,7 +4527,7 @@ namespace gInk
                 {
                     IC.Cursor = getCursFromDiskOrRes("cursorarrow", System.Windows.Forms.Cursors.NoMove2D);
                 }
-                System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
+                ForceCursorRefresh();
                 return;
             }
             if (!Root.EraserMode)
@@ -4575,7 +4575,7 @@ namespace gInk
             catch { }
             IC.Cursor = new System.Windows.Forms.Cursor(bitmaptip.GetHicon());
             IC.Cursor.Tag = 2;
-            System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
+            ForceCursorRefresh();
         }
 
         short LastESCStatus = 0;
@@ -5159,7 +5159,7 @@ namespace gInk
                 {
                     IC.Cursor = getCursFromDiskOrRes("cursorarrow", System.Windows.Forms.Cursors.NoMove2D);
                 }
-                System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
+                ForceCursorRefresh();
             }
             else if (!(tempArrowCursor is null) && !(AltKeyPressed() || Root.APIRestAltPressed))
             {
@@ -5168,7 +5168,7 @@ namespace gInk
                 {
                     IC.Cursor = tempArrowCursor;
                     tempArrowCursor = null;
-                    System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
+                    ForceCursorRefresh();
                 }
                 catch
                 {
@@ -7579,6 +7579,20 @@ namespace gInk
         public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out uint ProcessId);
         [DllImport("Kernel32.dll")]
         private static extern bool QueryFullProcessImageName([In] IntPtr hProcess, [In] uint dwFlags, [Out] StringBuilder lpExeName, [In, Out] ref uint lpdwSize);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out System.Drawing.Point lpPoint);
+        [DllImport("user32.dll")]
+        public static extern bool SetCursorPos(int X, int Y);
+
+        public static void ForceCursorRefresh()
+        {
+            System.Drawing.Point p;
+            if (GetCursorPos(out p))
+            {
+                SetCursorPos(p.X, p.Y);
+            }
+        }
 
     }
 }

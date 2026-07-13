@@ -974,7 +974,7 @@ namespace gInk
                                 resp.StatusCode = 400;
                                 ret = string.Format("!!!! Error in Query ({0}) - {1} ", req.HttpMethod, req.Url.AbsoluteUri);
                             }
-                            System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
+                            FormCollection.ForceCursorRefresh();
                         }
                         if (resp.StatusCode == 200)
                             ret = " { \"ArrowForced\" : " + (Root.APIRestAltPressed ? "true" : "false") + " }";
