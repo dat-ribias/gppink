@@ -504,6 +504,10 @@ namespace gInk
 
         public void Initialize()
         {
+            if (IC != null && IC.Enabled)
+            {
+                IC.Enabled = false;
+            }
 
             if (Root.FormOptions?.Visible ?? false)
             {

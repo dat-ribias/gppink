@@ -104,6 +104,28 @@ namespace gInk
                 this.Height = Root.WindowRect.Height;
             }
 
+            // Dispose existing GDI resources to prevent leaks and adjust to new bounds
+            if (gCanvus != null) { gCanvus.Dispose(); gCanvus = null; }
+            if (gOneStrokeCanvus != null) { gOneStrokeCanvus.Dispose(); gOneStrokeCanvus = null; }
+            if (gOutCanvus != null) { gOutCanvus.Dispose(); gOutCanvus = null; }
+
+            if (canvusDc != IntPtr.Zero) { DeleteDC(canvusDc); canvusDc = IntPtr.Zero; }
+            if (onestrokeDc != IntPtr.Zero) { DeleteDC(onestrokeDc); onestrokeDc = IntPtr.Zero; }
+            if (OutcanvusDc != IntPtr.Zero) { DeleteDC(OutcanvusDc); OutcanvusDc = IntPtr.Zero; }
+
+            if (Canvus != IntPtr.Zero) { DeleteObject(Canvus); Canvus = IntPtr.Zero; }
+            if (OneStrokeCanvus != IntPtr.Zero) { DeleteObject(OneStrokeCanvus); OneStrokeCanvus = IntPtr.Zero; }
+            if (OutCanvus != IntPtr.Zero) { DeleteObject(OutCanvus); OutCanvus = IntPtr.Zero; }
+
+            if (hScreenBitmap != IntPtr.Zero) { DeleteObject(hScreenBitmap); hScreenBitmap = IntPtr.Zero; }
+            if (memscreenDc != IntPtr.Zero) { DeleteDC(memscreenDc); memscreenDc = IntPtr.Zero; }
+
+            if (gpButtonsImage != null) { gpButtonsImage.Dispose(); gpButtonsImage = null; }
+            if (gpPenWidthImage != null) { gpPenWidthImage.Dispose(); gpPenWidthImage = null; }
+            if (gpSubToolsImage != null) { gpSubToolsImage.Dispose(); gpSubToolsImage = null; }
+            if (TransparentBrush != null) { TransparentBrush.Dispose(); TransparentBrush = null; }
+            if (SemiTransparentBrush != null) { SemiTransparentBrush.Dispose(); SemiTransparentBrush = null; }
+
             Bitmap InitCanvus = new Bitmap(this.Width, this.Height);
             Bitmap Init2Canvus = new Bitmap(this.Width, this.Height);
             Canvus = InitCanvus.GetHbitmap(Color.FromArgb(0));
@@ -159,6 +181,27 @@ namespace gInk
 
             if (Root.DirectX)
             {
+                if (DXwindow != null && (DXwindow.X != this.Left || DXwindow.Y != this.Top || DXwindow.Width != this.Width || DXwindow.Height != this.Height))
+                {
+                    DXselectionFramePen = null;
+                    if (DXgfx != null)
+                    {
+                        try { DXgfx.Dispose(); } catch { }
+                        DXgfx = null;
+                    }
+                    if (DXwindow != null)
+                    {
+                        try { DXwindow.Dispose(); } catch { }
+                        DXwindow = null;
+                    }
+                }
+
+                if (DXCapturedBmp != null) { DXCapturedBmp.Dispose(); DXCapturedBmp = null; }
+                if (DXInprogressBmp != null) { DXInprogressBmp.Dispose(); DXInprogressBmp = null; }
+                if (DXCaptureGraphics != null) { DXCaptureGraphics.Dispose(); DXCaptureGraphics = null; }
+                if (DXInProgressGraphics != null) { DXInProgressGraphics.Dispose(); DXInProgressGraphics = null; }
+                if (DXCaptureMemIO != null) { DXCaptureMemIO.Dispose(); DXCaptureMemIO = null; }
+
                 DXCapturedBmp = new Bitmap(this.Width, this.Height, PixelFormat.Format32bppArgb);
                 DXInprogressBmp = new Bitmap(this.Width, this.Height, PixelFormat.Format32bppArgb);
                 DXCaptureGraphics = Graphics.FromImage(DXCapturedBmp);
@@ -166,7 +209,7 @@ namespace gInk
                 DXCaptureMemIO = new System.IO.MemoryStream();
                 if (DXwindow == null)
                 {
-                    DXwindow = new OverlayWindow(this.Left, this.Right, this.Width, this.Height)
+                    DXwindow = new OverlayWindow(this.Left, this.Top, this.Width, this.Height)
                     {
                         IsTopmost = true,
                         IsVisible = true,

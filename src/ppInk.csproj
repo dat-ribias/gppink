@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -306,6 +306,7 @@
     <Content Include="..\changelog.txt" />
     <Content Include="..\ppInk\lang\fr.txt" />
     <Content Include="..\ppInk\lang\en-us.txt" />
+    <Content Include="..\ppInk\lang\vi.txt" />
     <Content Include="..\ppInk\config.ini" />
     <Content Include="..\ppInk\hotkeys.ini" />
     <Content Include="..\ppInk\pens.ini" />
@@ -452,6 +453,7 @@
     <None Include="icon_white.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Microsoft.NETFramework.ReferenceAssemblies.net45.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net45.targets" Condition="Exists('..\packages\Microsoft.NETFramework.ReferenceAssemblies.net45.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net45.targets')" />
   <PropertyGroup>
     <PreBuildEvent>echo namespace gInk { public static class Build { public static string Timestamp = "%25DATE%25 %25TIME%25".Substring(0,16);}} &gt; "$(ProjectDir)\BuildTimestamp.cs"</PreBuildEvent>
   </PropertyGroup>
