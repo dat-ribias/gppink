@@ -1172,6 +1172,9 @@ namespace gInk
 
             if (Root.FormCollection.SpotLightMode || Root.FormCollection.SpotLightTemp)
             {
+                System.Drawing.Drawing2D.SmoothingMode oldSmoothingMode = gOutCanvus.SmoothingMode;
+                gOutCanvus.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
                 GraphicsPath gp = new GraphicsPath();
                 Brush bru = new SolidBrush(Root.SpotLightColor);
                 gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
@@ -1180,6 +1183,8 @@ namespace gInk
                 gp.AddEllipse(new Rectangle(pt.X, pt.Y, 2 * Root.SpotLightRadius, 2 * Root.SpotLightRadius));
                 gOutCanvus.FillPath(bru, gp);
                 MemoSpotLight = true;
+
+                gOutCanvus.SmoothingMode = oldSmoothingMode;
             }
             else
                 MemoSpotLight = false;
