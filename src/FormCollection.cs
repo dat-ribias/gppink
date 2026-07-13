@@ -7580,17 +7580,24 @@ namespace gInk
         [DllImport("Kernel32.dll")]
         private static extern bool QueryFullProcessImageName([In] IntPtr hProcess, [In] uint dwFlags, [Out] StringBuilder lpExeName, [In, Out] ref uint lpdwSize);
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int X;
+            public int Y;
+        }
+
         [DllImport("user32.dll")]
-        public static extern bool GetCursorPos(out System.Drawing.Point lpPoint);
+        public static extern bool GetPhysicalCursorPos(out POINT lpPoint);
         [DllImport("user32.dll")]
-        public static extern bool SetCursorPos(int X, int Y);
+        public static extern bool SetPhysicalCursorPos(int X, int Y);
 
         public static void ForceCursorRefresh()
         {
-            System.Drawing.Point p;
-            if (GetCursorPos(out p))
+            POINT p;
+            if (GetPhysicalCursorPos(out p))
             {
-                SetCursorPos(p.X, p.Y);
+                SetPhysicalCursorPos(p.X, p.Y);
             }
         }
 
